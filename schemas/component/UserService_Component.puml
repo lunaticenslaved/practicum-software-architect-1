@@ -1,0 +1,25 @@
+@startuml
+title SmartHome Web Application Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(SmartHomeSystem, "SmartHome System") {
+  Container(UserService, "User Service", "Node.js", "")
+  Container(Database, "Database", "PostgreSQL", "")
+}
+
+Container(UserService, "User Service", "Node.js", "") {
+  Component(AuthController, "AuthController", "Manages authentication")
+  Component(UsersController, "UsersController", "Manages user")
+  Component(BusinessLogic, "Business Logic", "Business logic")
+  Component(RepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Rel(AuthController, BusinessLogic, "Calls business logic")
+Rel(UsersController, BusinessLogic, "Calls business logic")
+Rel(BusinessLogic, RepositoryLayer, "Reads/Writes data")
+Rel(RepositoryLayer, Database, "Reads/Writes user data")
+
+@enduml

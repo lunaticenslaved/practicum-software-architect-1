@@ -1,0 +1,55 @@
+@startuml
+' Включаем ER-диаграмму
+!define er dia
+
+' Явно указываем, что это ER-диаграмма
+top to bottom direction
+
+entity "User" as user {
+    + id: UUID [PK]
+    + login: varchar(255)
+    + password: varchar(255)
+}
+
+entity "Home" as home {
+    + id: UUID [PK]
+    + owner_id: UUID [FK]
+    + name: varchar(255)
+}
+
+entity "InHomeLocation" as inHomeLocation {
+    + id: UUID [PK]
+    + home_id: UUID [FK]
+    + name: varchar(255)
+}
+
+entity "Device" as device {
+    + id: UUID [PK]
+    + location_id: UUID [FK]
+    + type_id: UUID [FK]
+    --
+    + name: varchar(255)
+    + serial_number: varchar(255)
+    + created_at: timestamp
+}
+
+entity "DeviceType" as deviceType {
+    + id: UUID [PK]
+    + name: varchar(255)
+}
+
+entity "DeviceTelemetry" as deviceTelementry {
+    + device_id: UUID [FK]
+    + status: varchar(255)
+    + data: object
+    + created_at: timestamp
+}
+
+user ----o{ home : "has access to"
+home ----|{ user : "owned by"
+home ----o{ inHomeLocation : "has"
+inHomeLocation ----o{ device : "has"
+device }o--|| deviceType : "belongs to"
+device ||--o{ deviceTelementry : "has"
+
+@enduml
