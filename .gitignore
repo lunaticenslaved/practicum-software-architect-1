@@ -3,3 +3,4 @@
 schemas/**/*.png
 
 node_modules
+dist

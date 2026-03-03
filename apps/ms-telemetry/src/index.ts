@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import { TemperatureAPIService } from './temperature-api.service';
 
+// TODO написать на другом языке
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 const TEMPERATURE_API_URL = process.env.TEMPERATURE_API_URL ?? '';
