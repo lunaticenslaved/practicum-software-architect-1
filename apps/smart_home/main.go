@@ -32,6 +32,12 @@ func main() {
 	temperatureService := services.NewTemperatureService(temperatureAPIURL)
 	log.Printf("Temperature service initialized with API URL: %s\n", temperatureAPIURL)
 
+	// Initialize Sensors MS
+	// TODO
+
+	// Initialize Telemetry MS
+	// TODO
+
 	// Initialize router
 	router := gin.Default()
 

@@ -6,48 +6,26 @@ top to bottom direction
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
 Person(user, "User", "A user of the system")
-Person(sensor, "Sensor", "")
+Person(sensor, "Sensor", "aka Temperature API")
 
 System(SmartHomeSystem, "SmartHome System", "System managing sensors and temperature")
 
 Container_Boundary(SmartHomeSystem, "SmartHome System") {
+  Container(Monolith, "Monolith", "Old Monolith App. Can be turned into Gateway API")
+
   Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Allows users to manage their home")
-
-  Container(Gateway, "Gateway", "Node.js", "")
-  
-  Container(UserService, "User Service", "Node.js", "")
-  Container(HomeManagmentService, "Home Managment Service", "Node.js", "")
-  Container(ClimateControlService, "Climate Control Service", "Node.js", "")
-  Container(IoTService, "IoTService Service", "Node.js", "")
-  Container(NotificationService, "Notification Service", "Node.js", "")
-
-  Container(EventBus, "Event Bus", "Node.js", "")
+  Container(SensorsService, "Sensors Service", "Node.js", "")
+  Container(TelemetryService, "Telemetry Service", "Node.js", "")
   Container(Database, "Database", "PostgreSQL", "")
 }
 
-System_Ext(api, "Notification API", "External API for notifications")
-
 Rel(user, MobileApp, "")
-Rel(sensor, IoTService, "")
-
-Rel(MobileApp, Gateway, "")
-
-Rel(Gateway, UserService, "")
-Rel(Gateway, HomeManagmentService, "")
-Rel(Gateway, ClimateControlService, "")
-
-Rel(UserService, Database, "")
-Rel(UserService, EventBus, "")
-
-Rel(HomeManagmentService, Database, "")
-Rel(HomeManagmentService, EventBus, "")
-
-Rel(ClimateControlService, Database, "")
-Rel(ClimateControlService, sensor, "")
-Rel(ClimateControlService, EventBus, "")
-
-Rel(NotificationService, EventBus, "")
-
-Rel(NotificationService, api, "Uses external API to notify users about changes")
+Rel(Monolith, sensor, "")
+Rel(MobileApp, Monolith, "")
+Rel(Monolith, SensorsService, "")
+Rel(Monolith, TelemetryService, "")
+Rel(SensorsService, Database, "")
+Rel(TelemetryService, Database, "")
+Rel(TelemetryService, sensor, "")
 
 @enduml

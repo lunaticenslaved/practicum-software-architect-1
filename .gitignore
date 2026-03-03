@@ -1,3 +1,5 @@
 .DS_Store
 
 schemas/**/*.png
+
+node_modules

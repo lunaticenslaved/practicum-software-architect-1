@@ -23,23 +23,18 @@ entity "InHomeLocation" as inHomeLocation {
     + name: varchar(255)
 }
 
-entity "Device" as device {
+entity "Sensor" as sensor {
     + id: UUID [PK]
     + location_id: UUID [FK]
-    + type_id: UUID [FK]
     --
     + name: varchar(255)
+    + type: varchar(255)
     + serial_number: varchar(255)
     + created_at: timestamp
 }
 
-entity "DeviceType" as deviceType {
-    + id: UUID [PK]
-    + name: varchar(255)
-}
-
-entity "DeviceTelemetry" as deviceTelementry {
-    + device_id: UUID [FK]
+entity "SensorTelemetry" as sensorTelementry {
+    + sensor_id: UUID [FK]
     + status: varchar(255)
     + data: object
     + created_at: timestamp
@@ -48,8 +43,7 @@ entity "DeviceTelemetry" as deviceTelementry {
 user ----o{ home : "has access to"
 home ----|{ user : "owned by"
 home ----o{ inHomeLocation : "has"
-inHomeLocation ----o{ device : "has"
-device }o--|| deviceType : "belongs to"
-device ||--o{ deviceTelementry : "has"
+inHomeLocation ----o{ sensor : "has"
+sensor ||--o{ sensorTelementry : "has"
 
 @enduml

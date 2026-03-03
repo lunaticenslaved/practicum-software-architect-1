@@ -13,7 +13,6 @@ System_Ext(api, "Notification API", "External API for notifications")
 
 Rel(user, SmartHomeSystem, "")
 Rel(SmartHomeSystem, sensor, "")
-Rel(sensor, SmartHomeSystem, "")
 Rel(SmartHomeSystem, api, "Uses external API to notify users about changes")
 
 @enduml
