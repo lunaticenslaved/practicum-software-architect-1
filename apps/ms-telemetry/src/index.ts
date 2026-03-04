@@ -12,7 +12,7 @@ const temperatureAPIService = new TemperatureAPIService(TEMPERATURE_API_URL);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/healthcheck', (req: Request, res: Response) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json('Ready!');
 });
 

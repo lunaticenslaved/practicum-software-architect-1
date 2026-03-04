@@ -14,7 +14,7 @@ const telemetryService = new TelemetryService(TELEMETRY_SERVICE_URL)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/healthcheck', (req: Request, res: Response) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json('Ready!');
 });
 
