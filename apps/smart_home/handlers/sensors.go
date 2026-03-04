@@ -17,15 +17,15 @@ import (
 // SensorHandler handles sensor-related requests
 type SensorHandler struct {
 	DB                 *db.DB
-	TemperatureService *services.TemperatureService
+	TelemetryService *services.TelemetryService
 	SensorsService     *services.SensorsService
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService, sensorsService *services.SensorsService) *SensorHandler {
+func NewSensorHandler(db *db.DB, telemetryService *services.TelemetryService, sensorsService *services.SensorsService) *SensorHandler {
 	return &SensorHandler{
 		DB:                 db,
-		TemperatureService: temperatureService,
+		TelemetryService: telemetryService,
 		SensorsService:     sensorsService,
 	}
 }
@@ -55,7 +55,7 @@ func (h *SensorHandler) GetSensors(c *gin.Context) {
 	// Update temperature sensors with real-time data from the external API
 	for i, sensor := range sensors {
 		if sensor.Type == models.Temperature {
-			tempData, err := h.TemperatureService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
+			tempData, err := h.TelemetryService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
 			if err == nil {
 				// Update sensor with real-time data
 				sensors[i].Value = tempData.Value
@@ -87,7 +87,7 @@ func (h *SensorHandler) GetSensorByID(c *gin.Context) {
 
 	// If this is a temperature sensor, fetch real-time data from the temperature API
 	if sensor.Type == models.Temperature {
-		tempData, err := h.TemperatureService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
+		tempData, err := h.TelemetryService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
 		if err == nil {
 			// Update sensor with real-time data
 			sensor.Value = tempData.Value
@@ -111,7 +111,7 @@ func (h *SensorHandler) GetTemperatureByLocation(c *gin.Context) {
 	}
 
 	// Fetch temperature data from the external API
-	tempData, err := h.TemperatureService.GetTemperature(location)
+	tempData, err := h.TelemetryService.GetTemperature(location)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("Failed to fetch temperature data: %v", err),
