@@ -33,7 +33,9 @@ func main() {
 	log.Printf("Temperature service initialized with API URL: %s\n", temperatureAPIURL)
 
 	// Initialize Sensors MS
-	// TODO
+	sensorsAPIURL := getEnv("MS_SENSORS_URL", "http://ms-sensors:8080")
+	sensorsService := services.NewSensorsService(sensorsAPIURL)
+	log.Printf("Sensors service initialized with API URL: %s\n", sensorsAPIURL)
 
 	// Initialize Telemetry MS
 	// TODO
@@ -52,7 +54,7 @@ func main() {
 	apiRoutes := router.Group("/api/v1")
 
 	// Register sensor routes
-	sensorHandler := handlers.NewSensorHandler(database, temperatureService)
+	sensorHandler := handlers.NewSensorHandler(database, temperatureService, sensorsService)
 	sensorHandler.RegisterRoutes(apiRoutes)
 
 	// Start server

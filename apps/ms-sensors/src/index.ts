@@ -40,7 +40,7 @@ app.post('/sensors', async (req: Request, res: Response) => {
 
 app.put('/sensors/:id', async (req: Request, res: Response) => {
     const uc = new UpdateSensorUseCase(sensorRepository);
-    const data = {id: req.params.id};
+    const data = {id: req.params.id, ...req.body};
 
     return callUseCase(uc, data, res);
 });
