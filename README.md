@@ -85,6 +85,8 @@
 
 ### 2.3.2. Документация
 
+// TODO это не то
+
 - [Документация API микросервиса сенсоров](apps/ms-sensors/ms-sensors.postman_collection.json)
 - [Документация API микросервиса телеметрии](apps/ms-telemetry/ms-telemetry.postman_collection.json)
 
