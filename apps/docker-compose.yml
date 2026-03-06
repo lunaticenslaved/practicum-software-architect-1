@@ -75,8 +75,20 @@ services:
     restart: unless-stopped
     networks:
       - smarthome-network
-
     
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: smarthome-swagger-ui
+    environment:
+      - URLS=[{"url":"http://localhost:9090/smart-home-api.yaml","name":"Smart Home API"},{"url":"http://localhost:9090/ms-sensors-api.yaml","name":"MS-Sensors API"},{"url":"http://localhost:9090/ms-telemetry-api.yaml","name":"MS-Telemetry API"},{"url":"http://localhost:9090/temperature-api.yaml","name":"Temperature API"}]
+      - URLS_PRIMARY_NAME=Smart Home API
+    ports:
+      - "9090:8080"
+    volumes:
+      - ./openapi:/usr/share/nginx/html:ro
+    networks:
+      - smarthome-network
+
 volumes:
   postgres_data:
 

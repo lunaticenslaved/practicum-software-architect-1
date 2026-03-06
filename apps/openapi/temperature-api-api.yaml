@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: Temperature API
+  description: External API for generating temperature sensor data
+  version: 1.0.0
+  contact:
+    name: Temperature API Team
+
+servers:
+  - url: http://localhost:8081
+    description: Local development server
+
+tags:
+  - name: temperature
+    description: Temperature data operations
+  - name: health
+    description: Health check endpoints
+
+paths:
+  /health:
+    get:
+      tags:
+        - health
+      summary: Health check
+      description: Check if the service is running
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /temperature:
+    get:
+      tags:
+        - temperature
+      summary: Get temperature by location
+      description: Generate temperature data for a specific location
+      operationId: getTemperatureByLocation
+      parameters:
+        - name: location
+          in: query
+          required: true
+          description: Location name
+          schema:
+            type: string
+            example: Living Room
+      responses:
+        '200':
+          description: Temperature data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemperatureData'
+        '400':
+          description: Location is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /temperature/{id}:
+    get:
+      tags:
+        - temperature
+      summary: Get temperature by sensor ID
+      description: Generate temperature data for a specific sensor ID
+      operationId: getTemperatureBySensorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Sensor ID
+          schema:
+            type: string
+            example: "1"
+      responses:
+        '200':
+          description: Temperature data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemperatureData'
+        '400':
+          description: Sensor ID is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    TemperatureData:
+      type: object
+      properties:
+        value:
+          type: number
+          format: float
+          description: Temperature value
+          example: 22.5
+        unit:
+          type: string
+          description: Temperature unit
+          example: °C
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the reading
+          example: 2026-03-06T08:00:00Z
+        location:
+          type: string
+          description: Location of the sensor
+          example: Living Room
+        status:
+          type: string
+          description: Sensor status
+          example: active
+        sensor_id:
+          type: string
+          description: Unique sensor identifier
+          example: "1"
+        sensor_type:
+          type: string
+          description: Type of sensor
+          example: temperature
+        description:
+          type: string
+          description: Human-readable description
+          example: Temperature sensor in Living Room
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Error message
