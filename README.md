@@ -52,7 +52,7 @@
 ### 5. Визуализация системы — диаграмма С4
 
 - [Диаграмма контекста](./schemas/context/Context.png)
-- [Диаграмма контейнеров](// TODO)
+- [Диаграмма контейнеров](./schemas/container/Container_Monolith.png))
 
 # 2. Проектирование микросервисной архитектуры
 
@@ -62,10 +62,13 @@
 
 **Диаграмма контейнеров (Containers)**
 
-![Диаграмма контейнеров](./schemas/container/Container.png)
+![Диаграмма контейнеров](./schemas/container/Container_FullSystem.png)
 
 **Диаграмма компонентов (Components)**
 
+![Диаграмма компонентов AuthService](./schemas/component/AuthService_Component.png)
+![Диаграмма компонентов HomeService](./schemas/component/HomeService_Component.png)
+![Диаграмма компонентов NotifyService](./schemas/component/NotifyService_Component.png)
 ![Диаграмма компонентов SensorsService](./schemas/component/SensorsService_Component.png)
 ![Диаграмма компонентов TelemetryService](./schemas/component/TelemetryService_Component.png)
 
@@ -89,83 +92,23 @@
 - [Документация API микросервиса телеметрии](apps/ms-telemetry/api-docs.yaml)
 - [Документация API монолитного приложения](apps/smart_home/api-docs.yaml)
 
+// TODO добавить другие сервисы
+
 Вся документация доступна в [Swagger](http://localhost:9090/)
 
 ## 2.4 Реализация MVP
 
 Предложенная реализация включает в себя сохранение монолитного решения с целью обеспечить бесшовный переход на использование микросервисов.
 
+// TODO описать, что будет сделано в рамках реализации MVP
+
 ### 2.4.2 Диаграммы C4
 
-// TODO
+![Диаграмма контейнеров](./schemas/container/Container_Transition.png)
 
 # Задание 5. Работа с docker и docker-compose
 
-// TODO remove
-
-Перейдите в apps.
-
-Там находится приложение-монолит для работы с датчиками температуры. В README.md описано как запустить решение.
-
-Вам нужно:
-
-1) сделать простое приложение temperature-api на любом удобном для вас языке программирования, которое при запросе /temperature?location= будет отдавать рандомное значение температуры.
-
-Locations - название комнаты, sensorId - идентификатор названия комнаты
-
-```
-	// If no location is provided, use a default based on sensor ID
-	if location == "" {
-		switch sensorID {
-		case "1":
-			location = "Living Room"
-		case "2":
-			location = "Bedroom"
-		case "3":
-			location = "Kitchen"
-		default:
-			location = "Unknown"
-		}
-	}
-
-	// If no sensor ID is provided, generate one based on location
-	if sensorID == "" {
-		switch location {
-		case "Living Room":
-			sensorID = "1"
-		case "Bedroom":
-			sensorID = "2"
-		case "Kitchen":
-			sensorID = "3"
-		default:
-			sensorID = "0"
-		}
-	}
-```
-
-2) Приложение следует упаковать в Docker и добавить в docker-compose. Порт по умолчанию должен быть 8081
-
-3) Кроме того для smart_home приложения требуется база данных - добавьте в docker-compose файл настройки для запуска postgres с указанием скрипта инициализации ./smart_home/init.sql
-
-Для проверки можно использовать Postman коллекцию smarthome-api.postman_collection.json и вызвать:
-
-- Create Sensor
-- Get All Sensors
-
-Должно при каждом вызове отображаться разное значение температуры
-
-Ревьюер будет проверять точно так же.
-
-
-# **Задание 6. Разработка MVP**
-
-// TODO remove?
-
-Необходимо создать новые микросервисы и обеспечить их интеграции с существующим монолитом для плавного перехода к микросервисной архитектуре. 
-
-### **Что нужно сделать**
-
-1. Создайте новые микросервисы для управления телеметрией и устройствами (с простейшей логикой), которые будут интегрированы с существующим монолитным приложением. Каждый микросервис на своем ООП языке.
-2. Обеспечьте взаимодействие между микросервисами и монолитом (при желании с помощью брокера сообщений), чтобы постепенно перенести функциональность из монолита в микросервисы. 
-
-В результате у вас должны быть созданы Dockerfiles и docker-compose для запуска микросервисов. 
+// TODO опиши, как запустить приложение
+// TODO опиши файл запуска
+// TODO сгенерируй доку по сервисам
+// TODO попробуй повызывать апи через postmap collection

@@ -1,0 +1,57 @@
+@startuml
+title SmartHome Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "A user of the system")
+Person(sensor, "Sensor", "aka Temperature API")
+
+System(SmartHomeSystem, "SmartHome System", "System managing sensors and temperature")
+
+Container_Boundary(SmartHomeSystem, "SmartHome System") {
+  Container(APIGateway, "API Gateway", "Go", "Proxyfying requests, adding some data")
+
+  Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Allows users to manage their home")
+ 
+  Container(SensorsService, "Sensors Service", "Node.js", "Manages sensors")
+  Container(TelemetryService, "Telemetry Service", "Node.js", "Stores data from sensors")
+  Container(NotifyService, "Notify Service", "Node.js", "Manages user notifications")
+  Container(AuthService, "Auth Service", "Node.js", "Manages users, sessions and access rights")
+  Container(HomeService, "Home Service", "Node.js", "Manages user homes and locations")
+  
+  ContainerDb(AuthDatabase, "Database", "PostgreSQL", "Stores data about users, their data and sessions")
+  ContainerDb(SensorsDatabase, "Database", "PostgreSQL", "Stores data about sensors")
+  ContainerDb(TelemetryDatabase, "Database", "PostgreSQL", "Stores sensors' telemetry")
+  ContainerDb(HomeDatabase, "Database", "PostgreSQL", "Stores data about homes and locations")
+
+  Container(MessageBus, "MessageBus", "Kafka", "Handles events")
+}
+
+Rel(user, MobileApp, "Uses mobile app to manages home heating")
+
+Rel(MobileApp, APIGateway, "Sends and receives data")
+
+Rel(APIGateway, SensorsService, "Reads and updates sensors")
+Rel(APIGateway, TelemetryService, "Reads sensors' telemetry")
+Rel(APIGateway, AuthService, "Reads and updates users")
+Rel(APIGateway, HomeService, "Reads and updates homes and locations")
+
+Rel(AuthService, AuthDatabase, "")
+Rel(AuthService, MessageBus, "")
+
+Rel(HomeService, HomeDatabase, "")
+Rel(HomeService, MessageBus, "")
+
+Rel(NotifyService, MessageBus, "Reads event stream and notify users about changes")
+
+Rel(SensorsService, SensorsDatabase, "")
+Rel(SensorsService, MessageBus, "")
+
+Rel(TelemetryService, TelemetryDatabase, "")
+Rel(TelemetryService, MessageBus, "")
+
+Rel(sensor, TelemetryService, "Sends sensor's parameters")
+
+@enduml

@@ -1,13 +1,13 @@
 openapi: 3.0.3
 info:
-  title: Smart Home API
-  description: Main API for managing smart home sensors and their data
+  title: Sersors Service
+  description: Microservice for managing sensor data with domain-driven design
   version: 1.0.0
   contact:
-    name: Smart Home Team
+    name: Sensors Service Team
 
 servers:
-  - url: http://localhost:8080/api/v1
+  - url: http://localhost:8083
     description: Local development server
 
 tags:
@@ -30,19 +30,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
+                type: string
+                example: Ready!
 
   /sensors:
     get:
       tags:
         - sensors
-      summary: Get all sensors
-      description: Retrieve a list of all sensors with their current values
-      operationId: getSensors
+      summary: List all sensors
+      description: Retrieve a list of all registered sensors
+      operationId: listSensors
       responses:
         '200':
           description: List of sensors
@@ -52,19 +49,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Sensor'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
     post:
       tags:
         - sensors
-      summary: Create a new sensor
-      description: Register a new sensor in the system
-      operationId: createSensor
+      summary: Register a new sensor
+      description: Create a new sensor in the system
+      operationId: registerSensor
       requestBody:
         required: true
         content:
@@ -72,20 +63,14 @@ paths:
             schema:
               $ref: '#/components/schemas/SensorCreate'
       responses:
-        '201':
-          description: Sensor created successfully
+        '200':
+          description: Sensor registered successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sensor'
         '400':
           description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
           content:
             application/json:
               schema:
@@ -104,8 +89,7 @@ paths:
           required: true
           description: Sensor ID
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: Sensor details
@@ -115,12 +99,6 @@ paths:
                 $ref: '#/components/schemas/Sensor'
         '400':
           description: Invalid sensor ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Sensor not found
           content:
             application/json:
               schema:
@@ -138,8 +116,7 @@ paths:
           required: true
           description: Sensor ID
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
@@ -159,12 +136,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
     delete:
       tags:
@@ -178,8 +149,7 @@ paths:
           required: true
           description: Sensor ID
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: Sensor deleted successfully
@@ -193,12 +163,6 @@ paths:
                     example: Sensor deleted successfully
         '400':
           description: Invalid sensor ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
           content:
             application/json:
               schema:
@@ -217,8 +181,7 @@ paths:
           required: true
           description: Sensor ID
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         required: true
         content:
@@ -231,54 +194,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Sensor value updated successfully
+                $ref: '#/components/schemas/Sensor'
         '400':
           description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /sensors/temperature/{location}:
-    get:
-      tags:
-        - sensors
-      summary: Get temperature by location
-      description: Retrieve temperature data for a specific location
-      operationId: getTemperatureByLocation
-      parameters:
-        - name: location
-          in: path
-          required: true
-          description: Location name
-          schema:
-            type: string
-            example: Living Room
-      responses:
-        '200':
-          description: Temperature data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TemperatureData'
-        '400':
-          description: Location is required
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
           content:
             application/json:
               schema:
@@ -290,15 +208,13 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int64
-          example: 1
+          type: string
+          example: "1"
         name:
           type: string
           example: Living Room Temperature
         type:
           type: string
-          enum: [temperature, humidity, motion, light]
           example: temperature
         location:
           type: string
@@ -313,14 +229,10 @@ components:
         status:
           type: string
           example: active
-        last_updated:
+        lastUpdated:
           type: string
           format: date-time
           example: 2026-03-06T08:00:00Z
-        created_at:
-          type: string
-          format: date-time
-          example: 2026-03-01T10:00:00Z
 
     SensorCreate:
       type: object
@@ -328,21 +240,29 @@ components:
         - name
         - type
         - location
+        - value
         - unit
+        - status
       properties:
         name:
           type: string
           example: Living Room Temperature
         type:
           type: string
-          enum: [temperature, humidity, motion, light]
           example: temperature
         location:
           type: string
           example: Living Room
+        value:
+          type: number
+          format: float
+          example: 22.5
         unit:
           type: string
           example: °C
+        status:
+          type: string
+          example: active
 
     SensorUpdate:
       type: object
@@ -352,7 +272,6 @@ components:
           example: Living Room Temperature Sensor
         type:
           type: string
-          enum: [temperature, humidity, motion, light]
           example: temperature
         location:
           type: string
@@ -382,33 +301,12 @@ components:
           type: string
           example: active
 
-    TemperatureData:
-      type: object
-      properties:
-        location:
-          type: string
-          example: Living Room
-        value:
-          type: number
-          format: float
-          example: 22.5
-        unit:
-          type: string
-          example: °C
-        status:
-          type: string
-          example: active
-        timestamp:
-          type: string
-          format: date-time
-          example: 2026-03-06T08:00:00Z
-        description:
-          type: string
-          example: Temperature sensor in Living Room
-
     Error:
       type: object
       properties:
         error:
-          type: string
-          example: Error message
+          type: object
+          properties:
+            message:
+              type: string
+              example: Error message

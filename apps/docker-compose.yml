@@ -85,7 +85,7 @@ services:
     image: swaggerapi/swagger-ui:latest
     container_name: smarthome-swagger-ui
     environment:
-      - URLS=[{"url":"http://localhost:9090/openapi/smart-home.yaml","name":"Smart Home API"},{"url":"http://localhost:9090/openapi/ms-sensors.yaml","name":"MS-Sensors API"},{"url":"http://localhost:9090/openapi/ms-telemetry.yaml","name":"MS-Telemetry API"},{"url":"http://localhost:9090/openapi/temperature.yaml","name":"Temperature API"}]
+      - URLS=[{"url":"http://localhost:9090/openapi/sensors-service.yaml","name":"Sersors Service"},{"url":"http://localhost:9090/openapi/telemetry-service.yaml","name":"Telemetry Service"}]
       - URLS_PRIMARY_NAME=Smart Home API
     ports:
       - "9090:8080"

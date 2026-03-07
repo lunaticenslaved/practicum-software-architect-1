@@ -5,9 +5,9 @@ top to bottom direction
 
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
-Container_Boundary(SmartHomeSystem, "SmartHome System") {
+(SmartHomeSystem, "SmartHome System") {
   Container(TelemetryService, "TelemetryService", "Node.js", "")
-  Container(Database, "Database", "PostgreSQL", "")
+  ContainerDb(Database, "Database", "PostgreSQL", "")
 }
 
 Container(TelemetryService, "TelemetryService", "Node.js", "") {
