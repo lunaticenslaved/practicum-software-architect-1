@@ -85,15 +85,12 @@ services:
     image: swaggerapi/swagger-ui:latest
     container_name: smarthome-swagger-ui
     environment:
-      - URLS=[{"url":"http://localhost:9090/smart-home-api-docs.yaml","name":"Smart Home API"},{"url":"http://localhost:9090/ms-sensors-api-docs.yaml","name":"MS-Sensors API"},{"url":"http://localhost:9090/ms-telemetry-api-docs.yaml","name":"MS-Telemetry API"},{"url":"http://localhost:9090/temperature-api-docs.yaml","name":"Temperature API"}]
+      - URLS=[{"url":"http://localhost:9090/openapi/smart-home.yaml","name":"Smart Home API"},{"url":"http://localhost:9090/openapi/ms-sensors.yaml","name":"MS-Sensors API"},{"url":"http://localhost:9090/openapi/ms-telemetry.yaml","name":"MS-Telemetry API"},{"url":"http://localhost:9090/openapi/temperature.yaml","name":"Temperature API"}]
       - URLS_PRIMARY_NAME=Smart Home API
     ports:
       - "9090:8080"
     volumes:
-      - ./ms-sensors/api-docs.yaml:/usr/share/nginx/html/ms-sensors-api-docs.yaml:ro
-      - ./ms-telemetry/api-docs.yaml:/usr/share/nginx/html/ms-telemetry-api-docs.yaml:ro
-      - ./smart_home/api-docs.yaml:/usr/share/nginx/html/smart-home-api-docs.yaml:ro
-      - ./temperature-api/api-docs.yaml:/usr/share/nginx/html/temperature-api-docs.yaml:ro
+      - ../docs/openapi:/usr/share/nginx/html/openapi:ro
     networks:
       - smarthome-network
 
