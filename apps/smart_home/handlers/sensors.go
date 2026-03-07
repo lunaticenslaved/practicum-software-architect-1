@@ -16,15 +16,17 @@ import (
 
 // SensorHandler handles sensor-related requests
 type SensorHandler struct {
-	DB                 *db.DB
-	TemperatureService *services.TemperatureService
+	DB               *db.DB
+	TelemetryService *services.TelemetryService
+	SensorsService   *services.SensorsService
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService) *SensorHandler {
+func NewSensorHandler(db *db.DB, telemetryService *services.TelemetryService, sensorsService *services.SensorsService) *SensorHandler {
 	return &SensorHandler{
-		DB:                 db,
-		TemperatureService: temperatureService,
+		DB:               db,
+		TelemetryService: telemetryService,
+		SensorsService:   sensorsService,
 	}
 }
 
@@ -53,7 +55,7 @@ func (h *SensorHandler) GetSensors(c *gin.Context) {
 	// Update temperature sensors with real-time data from the external API
 	for i, sensor := range sensors {
 		if sensor.Type == models.Temperature {
-			tempData, err := h.TemperatureService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
+			tempData, err := h.TelemetryService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
 			if err == nil {
 				// Update sensor with real-time data
 				sensors[i].Value = tempData.Value
@@ -85,7 +87,7 @@ func (h *SensorHandler) GetSensorByID(c *gin.Context) {
 
 	// If this is a temperature sensor, fetch real-time data from the temperature API
 	if sensor.Type == models.Temperature {
-		tempData, err := h.TemperatureService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
+		tempData, err := h.TelemetryService.GetTemperatureByID(fmt.Sprintf("%d", sensor.ID))
 		if err == nil {
 			// Update sensor with real-time data
 			sensor.Value = tempData.Value
@@ -109,7 +111,7 @@ func (h *SensorHandler) GetTemperatureByLocation(c *gin.Context) {
 	}
 
 	// Fetch temperature data from the external API
-	tempData, err := h.TemperatureService.GetTemperature(location)
+	tempData, err := h.TelemetryService.GetTemperature(location)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("Failed to fetch temperature data: %v", err),
@@ -136,10 +138,27 @@ func (h *SensorHandler) CreateSensor(c *gin.Context) {
 		return
 	}
 
+	// Create sensor in the database
 	sensor, err := h.DB.CreateSensor(context.Background(), sensorCreate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	// Create sensor in the ms-sensors microservice
+	msRequest := services.SensorCreateRequest{
+		ID:       sensor.ID,
+		Name:     sensorCreate.Name,
+		Type:     string(sensorCreate.Type),
+		Location: sensorCreate.Location,
+		Unit:     sensorCreate.Unit,
+	}
+
+	_, err = h.SensorsService.CreateSensor(msRequest)
+	if err != nil {
+		log.Printf("Failed to create sensor in ms-sensors microservice: %v", err)
+	} else {
+		log.Printf("Successfully created sensor %d in ms-sensors microservice", sensor.ID)
 	}
 
 	c.JSON(http.StatusCreated, sensor)
@@ -159,10 +178,30 @@ func (h *SensorHandler) UpdateSensor(c *gin.Context) {
 		return
 	}
 
+	// Update sensor in the database
 	sensor, err := h.DB.UpdateSensor(context.Background(), id, sensorUpdate)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	// Update sensor in the ms-sensors microservice
+	msRequest := services.SensorUpdateRequest{
+		Name:     sensorUpdate.Name,
+		Type:     string(sensorUpdate.Type),
+		Location: sensorUpdate.Location,
+		Unit:     sensorUpdate.Unit,
+		Status:   sensorUpdate.Status,
+	}
+	if sensorUpdate.Value != nil {
+		msRequest.Value = *sensorUpdate.Value
+	}
+
+	_, err = h.SensorsService.UpdateSensor(fmt.Sprintf("%d", id), msRequest)
+	if err != nil {
+		log.Printf("Failed to update sensor in ms-sensors microservice: %v", err)
+	} else {
+		log.Printf("Successfully updated sensor %d in ms-sensors microservice", id)
 	}
 
 	c.JSON(http.StatusOK, sensor)
@@ -176,10 +215,19 @@ func (h *SensorHandler) DeleteSensor(c *gin.Context) {
 		return
 	}
 
+	// Delete sensor from the database
 	err = h.DB.DeleteSensor(context.Background(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	// Delete sensor from the ms-sensors microservice
+	err = h.SensorsService.DeleteSensor(fmt.Sprintf("%d", id))
+	if err != nil {
+		log.Printf("Failed to delete sensor from ms-sensors microservice: %v", err)
+	} else {
+		log.Printf("Successfully deleted sensor %d from ms-sensors microservice", id)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sensor deleted successfully"})
@@ -203,10 +251,24 @@ func (h *SensorHandler) UpdateSensorValue(c *gin.Context) {
 		return
 	}
 
+	// Update sensor value in the database
 	err = h.DB.UpdateSensorValue(context.Background(), id, request.Value, request.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	// Update sensor value in the ms-sensors microservice
+	msRequest := services.SensorValueUpdateRequest{
+		Value:  request.Value,
+		Status: request.Status,
+	}
+
+	err = h.SensorsService.UpdateSensorValue(fmt.Sprintf("%d", id), msRequest)
+	if err != nil {
+		log.Printf("Failed to update sensor value in ms-sensors microservice: %v", err)
+	} else {
+		log.Printf("Successfully updated sensor value for sensor %d in ms-sensors microservice", id)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sensor value updated successfully"})

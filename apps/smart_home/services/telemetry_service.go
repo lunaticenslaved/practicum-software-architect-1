@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// TemperatureService handles fetching temperature data from external API
-type TemperatureService struct {
+// TelemetryService handles fetching temperature data from external API
+type TelemetryService struct {
 	BaseURL    string
 	HTTPClient *http.Client
 }
@@ -25,9 +25,9 @@ type TemperatureResponse struct {
 	Description string    `json:"description"`
 }
 
-// NewTemperatureService creates a new temperature service
-func NewTemperatureService(baseURL string) *TemperatureService {
-	return &TemperatureService{
+// NewTelemetryService creates a new temperature service
+func NewTelemetryService(baseURL string) *TelemetryService {
+	return &TelemetryService{
 		BaseURL: baseURL,
 		HTTPClient: &http.Client{
 			Timeout: 10 * time.Second,
@@ -36,7 +36,7 @@ func NewTemperatureService(baseURL string) *TemperatureService {
 }
 
 // GetTemperature fetches temperature data for a specific location
-func (s *TemperatureService) GetTemperature(location string) (*TemperatureResponse, error) {
+func (s *TelemetryService) GetTemperature(location string) (*TemperatureResponse, error) {
 	url := fmt.Sprintf("%s/temperature?location=%s", s.BaseURL, location)
 
 	resp, err := s.HTTPClient.Get(url)
@@ -58,7 +58,7 @@ func (s *TemperatureService) GetTemperature(location string) (*TemperatureRespon
 }
 
 // GetTemperatureByID fetches temperature data for a specific sensor ID
-func (s *TemperatureService) GetTemperatureByID(sensorID string) (*TemperatureResponse, error) {
+func (s *TelemetryService) GetTemperatureByID(sensorID string) (*TemperatureResponse, error) {
 	url := fmt.Sprintf("%s/temperature/%s", s.BaseURL, sensorID)
 
 	resp, err := s.HTTPClient.Get(url)

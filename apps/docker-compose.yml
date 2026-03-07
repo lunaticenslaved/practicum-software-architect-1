@@ -4,10 +4,61 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: smarthome-postgres
-  ## тут нужно добавить настройки
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: smarthome
+    ports:
+      - "6432:5432"
+    volumes:
+      - ./smart_home/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d smarthome"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - smarthome-network
+
+  ms-sensors:
+    build:
+      context: ./ms-sensors
+      dockerfile: Dockerfile
+    container_name: smarthome-ms-sensors
+    environment:
+      - PORT=8080
+      - TELEMETRY_SERVICE_URL=http://ms-telemetry:8080
+    ports:
+      - "8083:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
+
+  ms-telemetry:
+    build:
+      context: ./ms-telemetry
+      dockerfile: Dockerfile
+    container_name: smarthome-ms-telemetry
+    environment:
+      - PORT=8080
+      - TEMPERATURE_API_URL=http://temperature-api:8081
+    ports:
+      - "8082:8080"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
 
   temperature-api:
-  ## тут нужно добавить приложение
+    build:
+      context: ./temperature-api
+      dockerfile: Dockerfile
+    container_name: smarthome-temperature-api
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+    networks:
+      - smarthome-network
 
   app:
     build:
@@ -20,11 +71,26 @@ services:
       temperature-api:
         condition: service_started
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/smarthome
       - TEMPERATURE_API_URL=http://temperature-api:8081
+      - MS_TELEMETRY_URL=http://ms-telemetry:8080
+      - MS_SENSORS_URL=http://ms-sensors:8080
     ports:
       - "8080:8080"
     restart: unless-stopped
+    networks:
+      - smarthome-network
+    
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: smarthome-swagger-ui
+    environment:
+      - URLS=[{"url":"http://localhost:9090/openapi/auth-service.yaml","name":"Auth Service"},{"url":"http://localhost:9090/openapi/home-service.yaml","name":"Home Service"},{"url":"http://localhost:9090/openapi/sensors-service.yaml","name":"Sensors Service"},{"url":"http://localhost:9090/openapi/telemetry-service.yaml","name":"Telemetry Service"}]
+      - URLS_PRIMARY_NAME=Smart Home API
+    ports:
+      - "9090:8080"
+    volumes:
+      - ../docs/openapi:/usr/share/nginx/html/openapi:ro
     networks:
       - smarthome-network
 

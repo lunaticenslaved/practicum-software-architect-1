@@ -1,0 +1,42 @@
+name: PlantUML schemas
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-diagrams:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Switch to correct branch
+      run: |
+        BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+        git checkout $BRANCH_NAME
+        
+    - name: Generate PlantUML diagrams
+      uses: Timmy/plantuml-action@v1
+      with:
+        args: '-tpng schemas/**/*.puml'
+
+    - name: Commit Schemas
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add schemas/**/*.png -f
+        git commit -m "Automated diagram generation"
+        git push origin HEAD:${{ github.head_ref || github.ref_name }}
+      if: success()

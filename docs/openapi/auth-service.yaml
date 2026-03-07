@@ -1,0 +1,555 @@
+openapi: 3.0.3
+info:
+  title: Auth Service API
+  description: Authentication and user management service for Smart Home system
+  version: 1.0.0
+  contact:
+    name: Smart Home Team
+    email: support@smarthome.example.com
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.smarthome.example.com/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication operations
+  - name: Users
+    description: User management operations
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Creates a new user account in the system
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              newUser:
+                summary: New user registration
+                value:
+                  username: john_doe
+                  email: john.doe@example.com
+                  password: SecurePass123!
+                  firstName: John
+                  lastName: Doe
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              examples:
+                success:
+                  summary: Successful registration
+                  value:
+                    id: 550e8400-e29b-41d4-a716-446655440000
+                    username: john_doe
+                    email: john.doe@example.com
+                    firstName: John
+                    lastName: Doe
+                    createdAt: '2026-03-07T13:30:00Z'
+                    updatedAt: '2026-03-07T13:30:00Z'
+        '400':
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidEmail:
+                  summary: Invalid email format
+                  value:
+                    code: INVALID_INPUT
+                    message: Invalid email format
+                    details:
+                      - field: email
+                        message: Must be a valid email address
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                userExists:
+                  summary: Username already taken
+                  value:
+                    code: USER_EXISTS
+                    message: User with this username or email already exists
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticates a user and returns an access token
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              usernameLogin:
+                summary: Login with username
+                value:
+                  username: john_doe
+                  password: SecurePass123!
+              emailLogin:
+                summary: Login with email
+                value:
+                  email: john.doe@example.com
+                  password: SecurePass123!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  summary: Successful login
+                  value:
+                    accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    tokenType: Bearer
+                    expiresIn: 3600
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      username: john_doe
+                      email: john.doe@example.com
+                      firstName: John
+                      lastName: Doe
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidCredentials:
+                  summary: Wrong password
+                  value:
+                    code: INVALID_CREDENTIALS
+                    message: Invalid username or password
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                userNotFound:
+                  summary: User does not exist
+                  value:
+                    code: USER_NOT_FOUND
+                    message: User not found
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Invalidates the current user session and access token
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully logged out
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                unauthorized:
+                  summary: Missing token
+                  value:
+                    code: UNAUTHORIZED
+                    message: Authentication required
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: List all users
+      description: Retrieves a paginated list of all users in the system
+      operationId: listUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          example: 20
+        - name: search
+          in: query
+          description: Search query for username or email
+          required: false
+          schema:
+            type: string
+          example: john
+        - name: sortBy
+          in: query
+          description: Field to sort by
+          required: false
+          schema:
+            type: string
+            enum: [username, email, createdAt, updatedAt]
+            default: createdAt
+          example: username
+        - name: sortOrder
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          example: asc
+      responses:
+        '200':
+          description: List of users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+              examples:
+                success:
+                  summary: Successful response
+                  value:
+                    data:
+                      - id: 550e8400-e29b-41d4-a716-446655440000
+                        username: john_doe
+                        email: john.doe@example.com
+                        firstName: John
+                        lastName: Doe
+                        createdAt: '2026-03-07T13:30:00Z'
+                        updatedAt: '2026-03-07T13:30:00Z'
+                      - id: 660e8400-e29b-41d4-a716-446655440001
+                        username: jane_smith
+                        email: jane.smith@example.com
+                        firstName: Jane
+                        lastName: Smith
+                        createdAt: '2026-03-06T10:15:00Z'
+                        updatedAt: '2026-03-06T10:15:00Z'
+                    pagination:
+                      page: 1
+                      limit: 20
+                      total: 2
+                      totalPages: 1
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      description: Retrieves detailed information about a specific user
+      operationId: getUserById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          description: User ID (UUID)
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              examples:
+                success:
+                  summary: User details
+                  value:
+                    id: 550e8400-e29b-41d4-a716-446655440000
+                    username: john_doe
+                    email: john.doe@example.com
+                    firstName: John
+                    lastName: Doe
+                    createdAt: '2026-03-07T13:30:00Z'
+                    updatedAt: '2026-03-07T13:30:00Z'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notFound:
+                  summary: User does not exist
+                  value:
+                    code: USER_NOT_FOUND
+                    message: User with ID 550e8400-e29b-41d4-a716-446655440000 not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_-]+$'
+          description: Unique username (alphanumeric, underscore, and hyphen only)
+          example: john_doe
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          description: User email address
+          example: john.doe@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 100
+          description: User password (min 8 characters)
+          example: SecurePass123!
+        firstName:
+          type: string
+          maxLength: 50
+          description: User's first name
+          example: John
+        lastName:
+          type: string
+          maxLength: 50
+          description: User's last name
+          example: Doe
+
+    LoginRequest:
+      type: object
+      required:
+        - password
+      properties:
+        username:
+          type: string
+          description: Username (required if email is not provided)
+          example: john_doe
+        email:
+          type: string
+          format: email
+          description: Email address (required if username is not provided)
+          example: john.doe@example.com
+        password:
+          type: string
+          format: password
+          description: User password
+          example: SecurePass123!
+      oneOf:
+        - required: [username]
+        - required: [email]
+
+    LoginResponse:
+      type: object
+      required:
+        - accessToken
+        - tokenType
+        - expiresIn
+        - user
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          description: JWT refresh token (optional)
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        tokenType:
+          type: string
+          description: Token type
+          example: Bearer
+        expiresIn:
+          type: integer
+          description: Token expiration time in seconds
+          example: 3600
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    UserResponse:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique user identifier
+          example: 550e8400-e29b-41d4-a716-446655440000
+        username:
+          type: string
+          description: Username
+          example: john_doe
+        email:
+          type: string
+          format: email
+          description: User email
+          example: john.doe@example.com
+        firstName:
+          type: string
+          description: User's first name
+          example: John
+        lastName:
+          type: string
+          description: User's last name
+          example: Doe
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+          example: '2026-03-07T13:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2026-03-07T13:30:00Z'
+
+    UserListResponse:
+      type: object
+      required:
+        - data
+        - pagination
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    Pagination:
+      type: object
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        limit:
+          type: integer
+          description: Items per page
+          example: 20
+        total:
+          type: integer
+          description: Total number of items
+          example: 100
+        totalPages:
+          type: integer
+          description: Total number of pages
+          example: 5
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: INVALID_INPUT
+        message:
+          type: string
+          description: Human-readable error message
+          example: Invalid input data
+        details:
+          type: array
+          description: Additional error details
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: Must be a valid email address

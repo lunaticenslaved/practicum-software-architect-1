@@ -1,0 +1,86 @@
+{
+	"info": {
+		"_postman_id": "ms-telemetry-api",
+		"name": "Telemetry Microservice API",
+		"description": "API для микросервиса телеметрии (ms-telemetry). Предоставляет доступ к данным температуры от внешнего API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/healthcheck",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"healthcheck"
+					]
+				},
+				"description": "Проверка работоспособности сервиса"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Temperature by Location",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/temperature?location=Kitchen",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"temperature"
+					],
+					"query": [
+						{
+							"key": "location",
+							"value": "Kitchen",
+							"description": "Название локации для получения температуры"
+						}
+					]
+				},
+				"description": "Получить данные о температуре по названию локации"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Temperature by Sensor ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/temperature/:id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"temperature",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1",
+							"description": "ID датчика"
+						}
+					]
+				},
+				"description": "Получить данные о температуре по ID датчика"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8082",
+			"type": "string"
+		}
+	]
+}
