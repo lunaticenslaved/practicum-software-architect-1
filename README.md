@@ -85,10 +85,11 @@
 
 ### 2.3.2. Документация
 
-// TODO добавить сваггер?
+- [Документация API микросервиса сенсоров](apps/ms-sensors/api-docs.yaml)
+- [Документация API микросервиса телеметрии](apps/ms-telemetry/api-docs.yaml)
+- [Документация API монолитного приложения](apps/smart_home/api-docs.yaml)
 
-- [Документация API микросервиса сенсоров](apps/ms-sensors/ms-sensors.postman_collection.json)
-- [Документация API микросервиса телеметрии](apps/ms-telemetry/ms-telemetry.postman_collection.json)
+Вся документация доступна в [Swagger](http://localhost:9090/)
 
 ## 2.4 Реализация MVP
 
