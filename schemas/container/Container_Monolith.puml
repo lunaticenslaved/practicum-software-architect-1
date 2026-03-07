@@ -1,4 +1,4 @@
-@startuml
+@startuml Container_Monolith
 title SmartHome Container Diagram
 
 top to bottom direction

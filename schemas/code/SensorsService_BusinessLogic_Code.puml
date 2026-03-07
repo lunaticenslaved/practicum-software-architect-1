@@ -1,4 +1,4 @@
-@startuml
+@startuml SensorsService_BusinessLogic_Code
 title SmartHome Sensors Controller Code Diagram
 
 top to bottom direction
