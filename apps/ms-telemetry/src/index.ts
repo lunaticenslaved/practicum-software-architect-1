@@ -17,6 +17,8 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 app.get('/temperature', async (req: Request, res: Response) => {
+    console.log('Gey temperature by location')
+
     const location = req.query.location as string;
 
     if (!location) {
@@ -31,14 +33,16 @@ app.get('/temperature', async (req: Request, res: Response) => {
 });
 
 app.get('/temperature/:id', async (req: Request, res: Response) => {
-    const sensorId = req.params.id as string;
+    console.log('Gey temperature by id')
+
+    const sensorId = Number(req.params.id);
 
     if (!sensorId) {
         return res.status(400).json({
             error: 'Not sensorId provided!'
         })
     }
-    
+
     const result = await temperatureAPIService.getTemperatureBySensorId(sensorId);
 
     return res.status(200).json(result)

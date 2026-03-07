@@ -26,7 +26,7 @@ app.get('/sensors', async (req: Request, res: Response) => {
 
 app.get('/sensors/:id', async (req: Request, res: Response) => {
     const uc = new GetSensorByIdUseCase(sensorRepository, telemetryService);
-    const data = {id: req.params.id};
+    const data = {id: Number(req.params.id)};
 
     return callUseCase(uc, data, res);
 });
@@ -40,21 +40,21 @@ app.post('/sensors', async (req: Request, res: Response) => {
 
 app.put('/sensors/:id', async (req: Request, res: Response) => {
     const uc = new UpdateSensorUseCase(sensorRepository);
-    const data = {id: req.params.id, ...req.body};
+    const data = {id: Number(req.params.id), ...req.body};
 
     return callUseCase(uc, data, res);
 });
 
 app.patch('/sensors/:id/value', async (req: Request, res: Response) => {
     const uc = new UpdateSensorValueUseCase(sensorRepository);
-    const data = {value: req.body.value, status: req.body.status, id: req.params.id};
+    const data = {value: req.body.value, status: req.body.status, id: Number(req.params.id)};
 
     return callUseCase(uc, data, res);
 });
 
 app.delete('/sensors/:id', async (req: Request, res: Response) => {
     const uc = new DeleteSensorUseCase(sensorRepository);
-    const data = {id: req.params.id};
+    const data = {id: Number(req.params.id)};
 
     return callUseCase(uc, data, res);
 });

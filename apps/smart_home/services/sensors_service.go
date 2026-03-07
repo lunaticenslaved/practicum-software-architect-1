@@ -16,7 +16,7 @@ type SensorsService struct {
 
 // SensorResponse represents a sensor from the ms-sensors service
 type SensorResponse struct {
-	ID          string    `json:"id"`
+	ID          int       `json:"id"`
 	Name        string    `json:"name"`
 	Type        string    `json:"type"`
 	Location    string    `json:"location"`
@@ -29,12 +29,11 @@ type SensorResponse struct {
 
 // SensorCreateRequest represents the request to create a sensor
 type SensorCreateRequest struct {
-	Name     string  `json:"name"`
-	Type     string  `json:"type"`
-	Location string  `json:"location"`
-	Value    float64 `json:"value"`
-	Unit     string  `json:"unit"`
-	Status   string  `json:"status"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Type     string `json:"type"`
+	Location string `json:"location"`
+	Unit     string `json:"unit"`
 }
 
 // SensorUpdateRequest represents the request to update a sensor

@@ -328,9 +328,7 @@ components:
         - name
         - type
         - location
-        - value
         - unit
-        - status
       properties:
         name:
           type: string
@@ -342,16 +340,9 @@ components:
         location:
           type: string
           example: Living Room
-        value:
-          type: number
-          format: float
-          example: 22.5
         unit:
           type: string
           example: °C
-        status:
-          type: string
-          example: active
 
     SensorUpdate:
       type: object

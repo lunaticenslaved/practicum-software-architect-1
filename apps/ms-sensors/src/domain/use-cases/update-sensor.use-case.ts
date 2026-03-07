@@ -3,7 +3,7 @@ import { ISensorRepository } from "../repositories";
 import { IUseCase, UseCaseValidationResult } from "./types";
 
 type Input = {
-    id: string, 
+    id: number, 
     name?: string, 
     type?: string, 
     location?: string, 

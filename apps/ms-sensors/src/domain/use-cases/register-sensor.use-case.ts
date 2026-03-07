@@ -3,9 +3,11 @@ import { ISensorRepository } from "../repositories";
 import { IUseCase, UseCaseValidationResult } from "./types";
 
 type Input = {
+    id: number;
     name: string,
     type: string,
     location: string,
+    unit: string,
 }
 
 type Output = Sensor;

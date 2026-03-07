@@ -7,23 +7,23 @@ export class TelemetryService implements ITelemetryService {
     ) {}
 
     async getTemperatureByLocation(location: string): Promise<TemperatureData> {
-        const respose = await axios.get<TemperatureData>(`${this.url}/temperature?location=${location}`, {
+        const response = await axios.get<TemperatureData>(`${this.url}/temperature?location=${location}`, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
 
-        return respose.data;
+        return response.data;
     }
 
-    async getTemperatureBySensorId(sensorId: string): Promise<TemperatureData> {
-         const respose = await axios.get<TemperatureData>(`${this.url}/temperature/${sensorId}`, {
+    async getTemperatureBySensorId(sensorId: number): Promise<TemperatureData> {
+         const response = await axios.get<TemperatureData>(`${this.url}/temperature/${sensorId}`, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
 
-        return respose.data;
+        return response.data;
     }
     
 }

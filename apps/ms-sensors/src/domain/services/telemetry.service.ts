@@ -4,12 +4,12 @@ export type TemperatureData = {
     timestamp: Date,
     location: string,
     status: 'active',
-    sensorId: string,
+    sensorId: number,
     sensorType: 'temperature',
     description: string,
 }
 
 export interface ITelemetryService {
     getTemperatureByLocation(location: string): Promise<TemperatureData>;
-    getTemperatureBySensorId(sensorId: string): Promise<TemperatureData>;
+    getTemperatureBySensorId(sensorId: number): Promise<TemperatureData>;
 }

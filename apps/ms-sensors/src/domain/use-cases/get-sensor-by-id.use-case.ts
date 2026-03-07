@@ -4,7 +4,7 @@ import { ITelemetryService } from "../services";
 import { IUseCase, UseCaseValidationResult } from "./types";
 
 type Input = {
-    id: string;
+    id: number;
 }
 
 type Output = Sensor

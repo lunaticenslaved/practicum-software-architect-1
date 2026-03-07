@@ -16,17 +16,17 @@ import (
 
 // SensorHandler handles sensor-related requests
 type SensorHandler struct {
-	DB                 *db.DB
+	DB               *db.DB
 	TelemetryService *services.TelemetryService
-	SensorsService     *services.SensorsService
+	SensorsService   *services.SensorsService
 }
 
 // NewSensorHandler creates a new SensorHandler
 func NewSensorHandler(db *db.DB, telemetryService *services.TelemetryService, sensorsService *services.SensorsService) *SensorHandler {
 	return &SensorHandler{
-		DB:                 db,
+		DB:               db,
 		TelemetryService: telemetryService,
-		SensorsService:     sensorsService,
+		SensorsService:   sensorsService,
 	}
 }
 
@@ -147,12 +147,11 @@ func (h *SensorHandler) CreateSensor(c *gin.Context) {
 
 	// Create sensor in the ms-sensors microservice
 	msRequest := services.SensorCreateRequest{
+		ID:       sensor.ID,
 		Name:     sensorCreate.Name,
 		Type:     string(sensorCreate.Type),
 		Location: sensorCreate.Location,
-		Value:    sensorCreate.Value,
 		Unit:     sensorCreate.Unit,
-		Status:   sensorCreate.Status,
 	}
 
 	_, err = h.SensorsService.CreateSensor(msRequest)
@@ -274,4 +273,3 @@ func (h *SensorHandler) UpdateSensorValue(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sensor value updated successfully"})
 }
-

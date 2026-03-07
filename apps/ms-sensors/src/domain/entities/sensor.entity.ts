@@ -1,5 +1,5 @@
 export type Sensor = {
-    id: string,
+    id: number,
     name: string,
     type: string,
     location: string,

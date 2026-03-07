@@ -4,22 +4,25 @@ import {ISensorRepository} from '../domain/repositories';
 let list: Sensor[] = [];
 
 export class SensorRepository implements ISensorRepository {
-    createSensor(arg: { name: string; type: string; location: string; }): Promise<Sensor> {
+    createSensor(arg: { id: number; name: string; type: string; location: string; unit: string; }): Promise<Sensor> {
         const now = new Date();
      
         const newSensor: Sensor = {
-            id: (list.length + 1).toString(),
+            id: arg.id,
             name: arg.name,
             type: arg.type,
             location: arg.location,
+            unit: arg.unit,
             createdAt: now,
             lastUpdated: now,
         }
 
+        list.push(newSensor)
+
         return Promise.resolve(newSensor)
     }
 
-    updateSendor(arg: { id: string; name?: string; type?: string; location?: string; value?: number; unit?: string; status?: string; }): Promise<Sensor> {
+    updateSendor(arg: { id: number; name?: string; type?: string; location?: string; value?: number; unit?: string; status?: string; }): Promise<Sensor> {
         const now = new Date();
 
         const foundSensor = list.find(s => s.id === arg.id);
@@ -30,6 +33,7 @@ export class SensorRepository implements ISensorRepository {
 
         const updated: Sensor = {
             ...foundSensor,
+            lastUpdated: now,
             name: arg.name ?? foundSensor.name,
             type: arg.type ?? foundSensor.type,
             location: arg.location ?? foundSensor.location,
@@ -43,14 +47,13 @@ export class SensorRepository implements ISensorRepository {
         return Promise.resolve(updated);
     }
 
-    deleteSensor(arg: { id: string; }): Promise<void> {
+    deleteSensor(arg: { id: number; }): Promise<void> {
         list = list.filter(s => s.id !== arg.id);
 
         return Promise.resolve();
     }
 
-    findOneSensor(arg: { id: string; }): Promise<Sensor | null> {
-        const now = new Date();
+    findOneSensor(arg: { id: number; }): Promise<Sensor | null> {
         const foundSensor = list.find(s => s.id === arg.id);
 
         return Promise.resolve(foundSensor ?? null);
