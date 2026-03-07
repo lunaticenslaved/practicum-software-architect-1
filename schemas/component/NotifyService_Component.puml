@@ -6,14 +6,14 @@ top to bottom direction
 !include https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
 Boundary(SmartHomeSystem, "SmartHome System") {
-  Container(NotifyService, "NotifyService", "Node.js", "")
+  Container(NotifyService, "NotifyService", "Node.js")
   Container(MessageBus, "MessageBus", "Kafka", "Handles events")
 }
 
 System_Ext(notificationAPI, "Notification API", "External API for notifications")
 
-Container(NotifyService, "NotifyService", "Node.js", "") {
-  Component(NotifyController, "NotifyController", "")
+Container(NotifyService, "NotifyService", "Node.js") {
+  Component(NotifyController, "NotifyController")
 }
 
 Rel(MessageBus, NotifyController, "Receives event to notify users about")

@@ -8,35 +8,35 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Set up Java
-      uses: actions/setup-java@v2
+      uses: actions/checkout@v3
       with:
-        distribution: 'temurin'
-        java-version: '11'
+        fetch-depth: 0
 
-    - name: Install PlantUML
-      run: sudo apt-get install plantuml
-
-    - name: Generate Diagrams
+    - name: Switch to correct branch
       run: |
-        plantuml schemas/context/*.puml
-        plantuml schemas/container/*.puml
-        plantuml schemas/component/*.puml
-        plantuml schemas/code/*.puml
+        BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+        git checkout $BRANCH_NAME
+        
+    - name: Generate PlantUML diagrams
+      uses: Timmy/plantuml-action@v1
+      with:
+        args: '-tpng schemas/**/*.puml'
 
     - name: Commit Schemas
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add schemas/**/*.png
+        git add schemas/**/*.png -f
         git commit -m "Automated diagram generation"
-        git push origin main
+        git push origin HEAD:${{ github.head_ref || github.ref_name }}
       if: success()

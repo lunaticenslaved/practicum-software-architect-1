@@ -6,14 +6,14 @@ top to bottom direction
 !include https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
 Boundary(SmartHomeSystem, "SmartHome System") {
-  Container(AuthService, "AuthService", "Node.js", "")
-  ContainerDb(Database, "Database", "PostgreSQL", "")
+  Container(AuthService, "AuthService", "Node.js")
+  ContainerDb(Database, "Database", "PostgreSQL")
 }
 
-Container(AuthService, "AuthService", "Node.js", "") {
-  Component(AuthController, "AuthController", "")
-  Component(SessionsController, "SessionsController", "")
-  Component(UsersController, "UsersController", "")
+Container(AuthService, "AuthService", "Node.js") {
+  Component(AuthController, "AuthController")
+  Component(SessionsController, "SessionsController")
+  Component(UsersController, "UsersController")
   Component(BusinessLogic, "Business Logic", "Business logic")
   Component(RepositoryLayer, "Repository Layer", "Data access logic")
 }

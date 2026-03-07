@@ -5,13 +5,13 @@ top to bottom direction
 
 !include https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
-(SmartHomeSystem, "SmartHome System") {
-  Container(TelemetryService, "TelemetryService", "Node.js", "")
-  ContainerDb(Database, "Database", "PostgreSQL", "")
+Boundary(SmartHomeSystem, "SmartHome System") {
+  Container(TelemetryService, "TelemetryService", "Node.js")
+  ContainerDb(Database, "Database", "PostgreSQL")
 }
 
-Container(TelemetryService, "TelemetryService", "Node.js", "") {
-  Component(TemperatureController, "TemperatureController", "")
+Container(TelemetryService, "TelemetryService", "Node.js") {
+  Component(TemperatureController, "TemperatureController")
   Component(BusinessLogic, "Business Logic", "Business logic")
   Component(RepositoryLayer, "Repository Layer", "Data access logic")
 }

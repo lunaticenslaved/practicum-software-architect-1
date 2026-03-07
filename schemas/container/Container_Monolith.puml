@@ -13,7 +13,7 @@ System(SmartHomeSystem, "SmartHome System", "System managing sensors and tempera
 Container_Boundary(SmartHomeSystem, "SmartHome System") {
   Container(Monolith, "Monolith", "Go", "Manages sensors, temperatures and others")
   Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Allows users to manage their home")
-  ContainerDb(Database, "Database", "PostgreSQL", "")
+  ContainerDb(Database, "Database", "PostgreSQL")
 }
 
 Rel(user, MobileApp, "Uses mobile app to manages home heating")
