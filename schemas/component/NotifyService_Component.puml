@@ -13,10 +13,12 @@ Boundary(SmartHomeSystem, "SmartHome System") {
 System_Ext(notificationAPI, "Notification API", "External API for notifications")
 
 Container(NotifyService, "NotifyService", "Node.js", "") {
-  Component(NotifyController, "NotifyController", "")
+  Component(MessageBusSubscriber, "MessageBusSubscriber", "Receives messages")
+  Component(BusinessLogic, "Business Logic", "Business logic")
 }
 
-Rel(MessageBus, NotifyController, "Receives event to notify users about")
-Rel(NotifyController, notificationAPI, "Calls external APIs")
+Rel(MessageBus, MessageBusSubscriber, "Sends messages")
+Rel(MessageBusSubscriber, BusinessLogic, "Call business logic")
+Rel(BusinessLogic, notificationAPI, "Calls external APIs")
 
 @enduml

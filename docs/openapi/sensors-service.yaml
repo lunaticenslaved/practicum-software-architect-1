@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Sersors Service
+  title: Sensors Service
   description: Microservice for managing sensor data with domain-driven design
   version: 1.0.0
   contact:
